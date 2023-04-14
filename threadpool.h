@@ -97,20 +97,35 @@ public:
     void init();
     void shutdown();
     
-    
     template<typename F,typename ...Args>
-    auto submit(F &&f,Args && ...args) -> std::future<decltype(f(args...))> {
-        std::function<decltype(f(args...))()> func = std::bind(std::forward<F>(f),std::forward<Args>(args)...);
+    auto submit(F &&f,Args && ...args)->std::future<decltype(f(args...))>{
+        std::function<decltype(f(args...))()> func = std::bind(std::forward<F>(f),std::forward<Args> (args)...);
         auto task_ptr = std::make_shared<std::packaged_task<decltype(f(args...))()>> (func);
-        
-        std::function<void()> warpper_func = [task_ptr](){
-            (*task_ptr)();
-        };
+
+        std::function<void()> warpper_func = [task_ptr](){ (*task_ptr)(); };
 
         m_q.enqueue(warpper_func);
         m_cond.notify_one();
+
         return task_ptr->get_future();
     }
+
+
+    
+    
+    // template<typename F,typename ...Args>
+    // auto submit(F &&f,Args && ...args) -> std::future<decltype(f(args...))> {
+    //     std::function<decltype(f(args...))()> func = std::bind(std::forward<F>(f),std::forward<Args>(args)...);
+    //     auto task_ptr = std::make_shared<std::packaged_task<decltype(f(args...))()>> (func);
+        
+    //     std::function<void()> warpper_func = [task_ptr](){
+    //         (*task_ptr)();
+    //     };
+
+    //     m_q.enqueue(warpper_func);
+    //     m_cond.notify_one();
+    //     return task_ptr->get_future();
+    // }
 };
 
 
