@@ -94,6 +94,11 @@ public:
     ThreadPool(int n_threads):m_threads(std::vector<std::thread>(n_threads)),is_shutdown(false){};
     ~ThreadPool(){};
     
+    ThreadPool(const ThreadPool &) = delete; //删除拷贝函数
+    ThreadPool(ThreadPool &&) = delete;//删除移动沟杂函数
+    ThreadPool &operator=(const ThreadPool &) = delete; //默认赋值函数
+    ThreadPool &operator=(ThreadPool &&) = delete;  //移动拷贝函数
+
     void init();
     void shutdown();
     
