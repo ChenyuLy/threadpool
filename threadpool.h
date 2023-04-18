@@ -75,10 +75,12 @@ private:
 
             while (!m_pool->is_shutdown)
             {
-                std::unique_lock<std::mutex> lock(m_pool->m_mutex);
-                while (m_pool->m_q.empty())
                 {
-                    m_pool->m_cond.wait(lock);
+                    std::unique_lock<std::mutex> lock(m_pool->m_mutex);
+                    while (m_pool->m_q.empty())
+                    {
+                        m_pool->m_cond.wait(lock);
+                    }
                 }
 
                 dequeue = m_pool->m_q.dequeue(func);
